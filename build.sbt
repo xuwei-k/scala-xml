@@ -20,8 +20,6 @@ libraryDependencies += "com.novocode" % "junit-interface" % "0.10" % "test"
 // used in CompilerErrors test
 libraryDependencies += ("org.scala-lang" % "scala-compiler" % scalaVersion.value % "test").exclude("org.scala-lang.modules", s"scala-xml_${scalaBinaryVersion.value}")
 
-//All(ExclusionRule(organization="org.scala-lang.modules"))
-
 compilers in (Compile, doc) := {
 	val instance = scalaInstance.value
 	val launcher = appConfiguration.value.provider.scalaProvider.launcher

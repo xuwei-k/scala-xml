@@ -164,7 +164,11 @@ class CompilerErrors extends CompilerTesting {
 
 // TODO: factor out somewhere?
 class CompilerTesting {
+  lazy val printVerOnce = println(s"Testing scala-xml version ${Properties.versionNumberString}")
+
   def errorMessages(errorSnippet: String, compileOptions: String = "")(code: String): List[String] = {
+    debugClassloaders(getClass.getClassLoader)
+    printVerOnce
     import scala.tools.reflect._
     val m  = scala.reflect.runtime.currentMirror
     val tb = m.mkToolBox(options = compileOptions) //: ToolBox[m.universe.type]
@@ -177,6 +181,23 @@ class CompilerTesting {
       import fe._
       infos.toList collect { case Info(_, msg, ERROR) => msg }
     }
+  }
+
+  def debugClassloaders(cl: ClassLoader) = {
+    def debugLoader(cl: ClassLoader): Unit = {
+      cl match {
+        case url: java.net.URLClassLoader =>
+          println(s"* URLCLassloader {\n   * ${url.getURLs.map(_.toString).mkString("\n   * ")}\n  })")
+        case other =>
+          println(s"* ${other.getClass.getName}")
+      }
+      Option(cl.getParent) match {
+        case None => ()
+        case Some(cl) => debugLoader(cl)
+      }
+    }  
+    println("-= Classloader hierarchy =-")
+    debugLoader(cl)
   }
 
   // note: `code` should have a | margin
